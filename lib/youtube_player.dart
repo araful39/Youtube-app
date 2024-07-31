@@ -9,10 +9,10 @@ class YoutubePlayerScreen extends StatefulWidget {
 }
 
 class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
-  late YoutubePlayerController _controller;
   double _volume = 100;
-  final List<String> _ids = [
 
+  List<YoutubePlayerController> _controllers = [];
+  final List<String> videoIds = [
     '4MnxZC94HJA',
     'nPt8bK2gbaU',
     'gQDByCdjUXw',
@@ -26,74 +26,52 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
   ];
   @override
   void initState() {
-
     super.initState();
-    _controller=YoutubePlayerController(
-      initialVideoId:_ids[0],
-
-      flags:const YoutubePlayerFlags(
-        useHybridComposition: true,
-        showLiveFullscreenButton: false,
-        forceHD: true,
-        disableDragSeek:true,
-        controlsVisibleAtStart:false,
-        hideThumbnail: true,
-        autoPlay:false,
-        mute:false,
-        isLive:false,
-      )
-    );
+    _controllers = videoIds
+        .map((videoIds) => YoutubePlayerController(
+            initialVideoId: videoIds,
+            flags: const YoutubePlayerFlags(
+              useHybridComposition: true,
+              showLiveFullscreenButton: false,
+              forceHD: true,
+              disableDragSeek: true,
+              controlsVisibleAtStart: false,
+              hideThumbnail: true,
+              autoPlay: false,
+              mute: false,
+              isLive: false,
+            )))
+        .toList();
   }
+
+  @override
+  void dispose() {
+    // Dispose the controllers
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayerBuilder(
-        player:  YoutubePlayer(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("YouTube Player"),
+        centerTitle: true,
+      ),
+      body: ListView.builder(
+          itemCount: videoIds.length,
+          itemBuilder: (context,index){
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: YoutubePlayer(controller: _controllers[index],
 
-        controller:_controller,
-        showVideoProgressIndicator:true,
-        progressIndicatorColor:Colors.amber,
-        progressColors:const ProgressBarColors(
-        playedColor:Colors.amber,
-        handleColor:Colors.amberAccent
-    ),
-    ), builder: (context , player ) {
-          return Scaffold(
-            appBar: AppBar(title: const Text("Youtube Player"),),
-            body: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  player,
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text("হত্যা, গণপ্রেপ্তার, হামলা, মামলার প্রতিবাদে সারাদেশের বিভিন্ন জায়গায় 'মার্চ ফর জাস্টিস",style: TextStyle(fontSize: 20),),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
+          showVideoProgressIndicator: true,
 
-
-                      Text("The Daily Star",style: TextStyle(fontSize: 20),),
-                      Card(
-                        color: Colors.black,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 10,horizontal: 15
-                          ),
-                          child: Text("Subscribe",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 15),),
-                        ),
-                      )
-                    ],
-                  ),
-                  Text("Create by Raju",style: TextStyle(fontSize: 20),),
-                ],
-              ),
-            ),
-
-          );
-    },);
+          ),
+        );
+      }),
+    );
   }
 }
