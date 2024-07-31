@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubePlayerScreen extends StatefulWidget {
@@ -9,13 +11,28 @@ class YoutubePlayerScreen extends StatefulWidget {
 }
 
 class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
-  double _volume = 100;
+  double volume = 100;
 
   List<YoutubePlayerController> _controllers = [];
   final List<String> videoIds = [
+    '3XF-nq9Qug4',
+    'ULEQb_l-N08',
+    'n2I7uJ_LkYY',
+    'qQhhil2vBJc',
     '4MnxZC94HJA',
+    'B6h-kQLQqec',
+    'ZKPKpEoFxwk',
+    'rK3ODIr4toU',
+    'zari70_ppQw',
+    'Kb_B9Td4kjE',
+    'nu7xilUwFU4',
+    'Us4cBROmAi8',
+    'T8qMKs9Fjtg',
+    '3-sTFakVb1g',
     'nPt8bK2gbaU',
+    'f3N97PaP3SY',
     'gQDByCdjUXw',
+    'CaQoj5hsecA',
     'iLnmTe5Q2Qw',
     '_WoCV4c6XOE',
     'KmzdUe0RSJo',
@@ -35,11 +52,11 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
               showLiveFullscreenButton: false,
               forceHD: true,
               disableDragSeek: true,
-              controlsVisibleAtStart: false,
               hideThumbnail: true,
               autoPlay: false,
               mute: false,
-              isLive: false,
+              enableCaption: true,
+              captionLanguage: 'en'
             )))
         .toList();
   }
@@ -55,23 +72,65 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("YouTube Player"),
-        centerTitle: true,
+    return SafeArea(
+      child: Scaffold(
+        body: ListView(
+          children: [
+            const SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "YouTube Player",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.purple,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )),
+            ListView.builder(
+                scrollDirection: Axis.vertical,
+                physics: const PageScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: videoIds.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+
+                        YoutubePlayer(
+                            bottomActions: <Widget>[
+                              const SizedBox(width: 14.0),
+                              IconButton(onPressed: (){}, icon: const Icon(Icons.skip_previous,color: Colors.white,)),
+                              IconButton(onPressed: (){
+
+                              }, icon: const Icon(Icons.skip_next,color: Colors.white)),
+                              CurrentPosition(),
+                              const SizedBox(width: 8.0),
+                              ProgressBar(isExpanded: true),
+                              RemainingDuration(),
+                              FullScreenButton(
+                                controller:_controllers[index] ,
+                              ),
+
+
+                            ],
+                            aspectRatio: 4 / 2.5,
+
+                          controller: _controllers[index],
+                          showVideoProgressIndicator: true,
+                        ),
+
+                      ],
+                    ),
+                  );
+                }),
+          ],
+        ),
       ),
-      body: ListView.builder(
-          itemCount: videoIds.length,
-          itemBuilder: (context,index){
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: YoutubePlayer(controller: _controllers[index],
-
-          showVideoProgressIndicator: true,
-
-          ),
-        );
-      }),
     );
   }
 }
