@@ -12,6 +12,8 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
   late YoutubePlayerController _controller;
   double _volume = 100;
   final List<String> _ids = [
+
+    '4MnxZC94HJA',
     'nPt8bK2gbaU',
     'gQDByCdjUXw',
     'iLnmTe5Q2Qw',
@@ -27,7 +29,7 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
 
     super.initState();
     _controller=YoutubePlayerController(
-      initialVideoId:_ids[2],
+      initialVideoId:_ids[0],
 
       flags:const YoutubePlayerFlags(
         useHybridComposition: true,
@@ -62,16 +64,31 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
               child: Column(
                 children: [
                   player,
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
-                  Row(
+                  Text("হত্যা, গণপ্রেপ্তার, হামলা, মামলার প্রতিবাদে সারাদেশের বিভিন্ন জায়গায় 'মার্চ ফর জাস্টিস",style: TextStyle(fontSize: 20),),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
 
-                      Text("Create by Raju",style: TextStyle(fontSize: 20),),
+
+                      Text("The Daily Star",style: TextStyle(fontSize: 20),),
+                      Card(
+                        color: Colors.black,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 10,horizontal: 15
+                          ),
+                          child: Text("Subscribe",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 15),),
+                        ),
+                      )
                     ],
-                  )
+                  ),
+                  Text("Create by Raju",style: TextStyle(fontSize: 20),),
                 ],
               ),
             ),
