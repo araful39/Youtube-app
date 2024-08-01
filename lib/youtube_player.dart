@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubePlayerScreen extends StatefulWidget {
@@ -11,7 +9,7 @@ class YoutubePlayerScreen extends StatefulWidget {
 }
 
 class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
-  double volume = 100;
+  bool volumeIsMute = false;
 
   List<YoutubePlayerController> _controllers = [];
   final List<String> videoIds = [
@@ -44,21 +42,25 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
   @override
   void initState() {
     super.initState();
+    controlPlayer();
+  }
+
+  void controlPlayer() {
     _controllers = videoIds
         .map((videoIds) => YoutubePlayerController(
             initialVideoId: videoIds,
-            flags: const YoutubePlayerFlags(
-              useHybridComposition: true,
-              showLiveFullscreenButton: false,
-              forceHD: true,
-              disableDragSeek: true,
-              hideThumbnail: true,
-              autoPlay: false,
-              mute: false,
-              enableCaption: true,
-              captionLanguage: 'en'
-            )))
+            flags: YoutubePlayerFlags(
+                useHybridComposition: true,
+                showLiveFullscreenButton: false,
+                forceHD: true,
+                disableDragSeek: true,
+                hideThumbnail: true,
+                autoPlay: false,
+                mute: volumeIsMute,
+                enableCaption: true,
+                captionLanguage: 'en')))
         .toList();
+    setState(() {});
   }
 
   @override
@@ -98,33 +100,53 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-
-                        YoutubePlayer(
-                            bottomActions: <Widget>[
-                              const SizedBox(width: 14.0),
-                              IconButton(onPressed: (){}, icon: const Icon(Icons.skip_previous,color: Colors.white,)),
-                              IconButton(onPressed: (){
-
-                              }, icon: const Icon(Icons.skip_next,color: Colors.white)),
-                              CurrentPosition(),
-                              const SizedBox(width: 8.0),
-                              ProgressBar(isExpanded: true),
-                              RemainingDuration(),
-                              FullScreenButton(
-                                controller:_controllers[index] ,
-                              ),
-
-
-                            ],
-                            aspectRatio: 4 / 2.5,
-
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: FittedBox(
+                        fit: BoxFit.fill,
+                        child: YoutubePlayer(
+                          bottomActions: <Widget>[
+                            Row(
+                              children: [
+                                InkWell(
+                                    onTap: () {},
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.skip_previous,
+                                        color: Colors.white,
+                                      ),
+                                    )),
+                                InkWell(
+                                    onTap: () {},
+                                    child: const Icon(Icons.skip_next,
+                                        color: Colors.white)),
+                                InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        volumeIsMute = !volumeIsMute;
+                                      });
+                                    },
+                                    child: volumeIsMute
+                                        ? const Icon(Icons.music_note,
+                                            color: Colors.white)
+                                        : const Icon(Icons.music_off,
+                                            color: Colors.white)),
+                              ],
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            CurrentPosition(),
+                            ProgressBar(isExpanded: true),
+                            RemainingDuration(),
+                            FullScreenButton()
+                          ],
+                          aspectRatio: 4 / 2.5,
                           controller: _controllers[index],
                           showVideoProgressIndicator: true,
                         ),
-
-                      ],
+                      ),
                     ),
                   );
                 }),
