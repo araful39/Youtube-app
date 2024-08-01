@@ -10,7 +10,8 @@ class YoutubePlayerScreen extends StatefulWidget {
 
 class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
   bool volumeIsMute = false;
-
+  bool totalDuration = true;
+  double volume = 100;
   List<YoutubePlayerController> _controllers = [];
   final List<String> videoIds = [
     '3XF-nq9Qug4',
@@ -49,18 +50,15 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
     _controllers = videoIds
         .map((videoIds) => YoutubePlayerController(
             initialVideoId: videoIds,
-            flags: YoutubePlayerFlags(
-                useHybridComposition: true,
-                showLiveFullscreenButton: false,
-                forceHD: true,
-                disableDragSeek: true,
+            flags: const YoutubePlayerFlags(
+                forceHD: false,
+                disableDragSeek: false,
                 hideThumbnail: true,
                 autoPlay: false,
-                mute: volumeIsMute,
+                mute: false,
                 enableCaption: true,
                 captionLanguage: 'en')))
         .toList();
-    setState(() {});
   }
 
   @override
@@ -105,42 +103,19 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
                       child: FittedBox(
                         fit: BoxFit.fill,
                         child: YoutubePlayer(
-                          bottomActions: <Widget>[
-                            Row(
-                              children: [
-                                InkWell(
-                                    onTap: () {},
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        Icons.skip_previous,
-                                        color: Colors.white,
-                                      ),
-                                    )),
-                                InkWell(
-                                    onTap: () {},
-                                    child: const Icon(Icons.skip_next,
-                                        color: Colors.white)),
-                                InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        volumeIsMute = !volumeIsMute;
-                                      });
-                                    },
-                                    child: volumeIsMute
-                                        ? const Icon(Icons.music_note,
-                                            color: Colors.white)
-                                        : const Icon(Icons.music_off,
-                                            color: Colors.white)),
-                              ],
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            CurrentPosition(),
-                            ProgressBar(isExpanded: true),
-                            RemainingDuration(),
-                            FullScreenButton()
+                          topActions: [
+                            IconButton(
+                                icon: Icon(volumeIsMute
+                                    ? Icons.volume_off
+                                    : Icons.volume_up,color: Colors.white,),
+                                onPressed: () {
+                                  volumeIsMute
+                                      ? _controllers[index].unMute()
+                                      : _controllers[index].mute();
+                                  setState(() {
+                                    volumeIsMute = !volumeIsMute;
+                                  });
+                                }),
                           ],
                           aspectRatio: 4 / 2.5,
                           controller: _controllers[index],
